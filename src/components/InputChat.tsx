@@ -4,14 +4,26 @@ import Card from "../components/Card/Card";
 
 export default function InputChat() {
   const [translationKey, setTranslationKey] = useState("");
+  const [originalMessage, setOriginalMessage] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  const playAudio = () => {
+    const audio = new Audio("/public/blip.mp3");
+    audio.play();
+  };
 
   const handleTranslationKeyChange: ChangeEventHandler<
     HTMLInputElement
   > = event => {
     setTranslationKey(event.target.value);
+  };
+
+  const handleOriginalMessageChange: ChangeEventHandler<
+    HTMLTextAreaElement
+  > = event => {
+    setOriginalMessage(event.target.value);
   };
 
   const handleSubmitForm: FormEventHandler<HTMLFormElement> = async event => {
@@ -37,6 +49,7 @@ export default function InputChat() {
     if (message) {
       setIsLoading(false);
       setResponseMessage(message);
+      playAudio();
     }
   };
 
@@ -45,19 +58,21 @@ export default function InputChat() {
       onSubmit={handleSubmitForm}
       className="flex flex-col items-center gap-4 py-10"
     >
-      <div className="flex flex-row gap-3">
-        <label className="flex flex-col gap-1 w-[30%]">
+      <div className="flex w-full flex-col gap-3">
+        <label className="flex w-[30%] flex-col gap-1">
           Key
           <input
             onChange={handleTranslationKeyChange}
             className="rounded-lg border-2 border-solid border-violet-500 caret-violet-500 outline-none focus:caret-violet-700"
           />
         </label>
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-1 flex-col gap-1">
           Message
-          <input
+          <textarea
             id="message"
             name="message"
+            rows={5}
+            onChange={handleOriginalMessageChange}
             className="rounded-lg border-2 border-solid border-violet-500 caret-violet-500 outline-none focus:caret-violet-700"
           />
         </label>
@@ -78,6 +93,11 @@ export default function InputChat() {
           {hasError && <p>Something went wrong!</p>}
           {responseMessage && (
             <ul className="grid w-[100%] grid-cols-1 gap-4">
+              <Card
+                title={"español"}
+                translationKey={translationKey}
+                body={originalMessage}
+              />
               {Object.entries(responseMessage).map(([language, value]) => (
                 <Card
                   key={language}

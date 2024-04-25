@@ -1,11 +1,20 @@
 import "./card.css";
 
 const Card = ({ title, translationKey, body }) => {
+
+  const getBodyString = () => {
+    if (typeof body === "string") {
+      return body;
+    }
+
+    return JSON.stringify(body, null, 2);
+  }
+  
   const copyToClipboard = () => {
-    let textToCopy = `"${body}"`;
+    let textToCopy = `${getBodyString()}`;
 
     if (translationKey) {
-      textToCopy = `"${translationKey}": "${body}"`;
+      textToCopy = `"${translationKey}": ${getBodyString()}`;
     }
 
     navigator.clipboard.writeText(textToCopy);
@@ -20,7 +29,7 @@ const Card = ({ title, translationKey, body }) => {
         {translationKey && (
           <small className="text-gray-400">{translationKey}</small>
         )}
-        <p className="py-1">{body}</p>
+        <p className="py-1">{getBodyString()}</p>
       </div>
     </li>
   );

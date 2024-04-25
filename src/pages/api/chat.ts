@@ -37,13 +37,13 @@ export const post: APIRoute = async ({ request }) => {
 
 async function translateChat(text) {
   const configuration = new Configuration({
-    apiKey: import.meta.env.OPENAI_API_KEY,
+    apiKey: import.meta.env.OPENAI_API_KEY_ALT,
   });
   const openai = new OpenAIApi(configuration);
 
   try {
     const completion = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4-turbo",
       messages: [
         SYSTEM_MESSAGE,
         ...EXAMPLE_MESSAGES,
@@ -65,6 +65,7 @@ const SYSTEM_MESSAGE: any = {
   content: `You are an AI that translates text from spanish to english, italian, portuguese and french.
     You are given a text in spanish and you have to translate to english, italian, portuguese and french.
     The output should be a json object with the language as a key and the translated values as value.
+    You could receive a text in a json format, leave the keys as they are, just translate the values.
     Do not translate the text inside "%()s" or "%{}".
     Do not answer, just translate the text.
   `,
@@ -88,5 +89,21 @@ const EXAMPLE_MESSAGES: any[] = [
   {
     role: "assistant",
     content: `{"english": "A future full of opportunities", "italian": "Un futuro pieno di opportunità", "portuguese": "Um futuro cheio de oportunidades", "french": "Un avenir plein d'opportunités"}`,
+  },
+  {
+    role: "user",
+    content: `{"title": "¿Cómo invierto en un proyecto?"}`,
+  },
+  {
+    role: "assistant",
+    content: `{ "english": { "title": "How do I invest in a project?" }, "italian": { "title": "Come investo in un progetto?" }, "portuguese": { "title": "Como eu invisto em um projeto?" }, "french": { "title": "Comment investir dans un projet?" } }`,
+  },
+  {
+    role: "user",
+    content: ` "9": { "title": "¿Cuál es la cantidad %(bold)s de inversión?", "titleBold1": "mínima", }, "10": { "title": "¿Cuál es la cantidad %(bold)s de inversión?", "titleBold": "máxima" }, `,
+  },
+  {
+    role: "assistant",
+    content: ` "english": { "9": { "title": "What is the %(bold)s amount of investment?", "titleBold1": "minimum" }, "10": { "title": "What is the %(bold)s amount of investment?", "titleBold": "maximum" }, }, "italian": { "9": { "title": "Qual è l'importo %(bold)s dell'investimento?", "titleBold1": "minimo" }, "10": { "title": "Qual è l'importo %(bold)s dell'investimento?", "titleBold": "massimo" }, }, "portuguese": { "9": { "title": "Qual é o valor %(bold)s do investimento?", "titleBold1": "mínimo" }, "10": { "title": "Qual é o valor %(bold)s do investimento?", "titleBold": "máximo" }, }, "french": { "9": { "title": "Quel est le montant %(bold)s de l'investissement?", "titleBold1": "minimum" }, "10": { "title": "Quel est le montant %(bold)s de l'investissement?", "titleBold": "maximum" }, } `,
   },
 ];
